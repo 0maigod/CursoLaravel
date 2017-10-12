@@ -14,13 +14,15 @@ use Illuminate\Routing\Route;
 
 class UsuarioController extends Controller
 {
-    // public function __construct(){
+    public function __construct(){
+            $this -> middleware('auth');
+            $this -> middleware('admin', ['only' => ['create', 'edit']]);
     //     $this -> beforeFilter('@find', ['only' =>['edit', 'update', 'destroy']]);
     // }
 
     //     public function __construct(){
     //     $this -> middleware('find', ['only' =>['edit', 'update', 'destroy']]);
-    // }
+    }
 
     public function find(Route $route){
         $this -> user = User::find($route -> getParameter('usuario'));    
