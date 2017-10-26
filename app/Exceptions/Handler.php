@@ -3,6 +3,9 @@
 namespace Cinema\Exceptions;
 
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -13,7 +16,8 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        HttpException::class,
+        ModelNotFoundException::class,
     ];
 
     /**
@@ -34,9 +38,9 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
+    public function report(Exception $e)
     {
-        parent::report($exception);
+        return parent::report($e);
     }
 
     /**
@@ -46,8 +50,24 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
+        if ($e instanceof ModelNotFoundException) {
+            $e = new NotFoundHttpException($e->getMessage(), $e);
+        }
         return parent::render($request, $exception);
     }
 }
+
+
+//ver si esta solucion es correcta!!
+
+//     protected function unauthenticated($request, AuthenticationException $exception) 
+//     { 
+//         if ($request->expectsJson()) 
+//             { 
+//                 return response()->json(['error' => 'Unauthenticated.'], 401); }
+
+//                 return redirect()->guest('/'); 
+//             }
+// }
